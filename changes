@@ -1,3 +1,7 @@
+VERSION 0.08 - 12 december 2001
+- nearly complete rewritting of the overriding require()
+- test corrections thanks to Mooney Christophe <CMOONEY1@motorola.com>
+  I hope tests work correctly on non Win32 plateform.
 VERSION 0.06 - 08 june 2001
 - minor documentation enhancements
 - test corrections

@@ -99,21 +99,10 @@ vers C<STDERR>.
 
 =item stop
 
-Arrête le programme avant que la première du programme ne soit
+Arrête le programme avant que la première ligne du programme ne soit
 exécutée si l'exécution à lieu avec perldb.  Ne permet pas de voir les
 chargements effectués par les C<require()> et les chargements qui
 se trouvent dans un C<eval()>.
-
-=item try
-
-Si l'exécution échoue avec le message C<Can't locate Bar.pm in @INC
-...> et que vous êtes sûr de votre code, utilisez l'option C<try>.
-Cette option active une heuristique pour compenser le fait qu'il n'est
-pas possible de savoir si l'argument d'un c<require()> est placé entre
-guillemets ou non (est-ce que je me trompe ?). Pour essayer de le
-déterminer nous utilisons une heuristique qui consiste, entre autre, à
-considérer que l'argument est placé entre guillemets s'il n'est pas
-suffixé par ".pl" ou ".pm".
 
 =back
 
@@ -125,10 +114,15 @@ la version de Perl sur laquelle nous avons fait nos tests les modules
 concernés sont Exporter.pm Carp.pm vars.pm warnings::register.pm
 Devel::TraceLoad.pm warnings.pm).
 
-=head1 AUTHOR
+=head1 AUTEURS
 
 Philippe Verdret <pverdret@dalet.com>, sur la base d'une idée de
 Joshua Pritikin <vishnu@pobox.com>.
+
+=head1 NOTES
+
+Merci à Mooney Christophe < CMOONEY1@motorola.com > pour son aide
+dans le déverminage des tests.
 
 La version anglaise de la documentation est produite à partir
 d'un traduction automatique effectuée par C<babel.altavista.com>.

@@ -1,8 +1,11 @@
+# C:\MyPerl\Applications\TraceLoad>perl -It -Ilib -MDevel::TraceLoad=s_by_s t\version_num.pl
+# perl5-porters@perl.org
 #use warnings;
 #use strict;
+require 5.6.1;
 package Devel::TraceLoad;
 use vars qw($VERSION);
-$VERSION = 0.07;
+$VERSION = 0.08;
 sub trace;
 my $pkg = __PACKAGE__;
 my @info;
@@ -20,8 +23,9 @@ my %opts = (
 	    path => 0,
 	    stdout => 0,
 	    sort => 0,
-	    test => 0, # for easy comparaison with the native require
-	    trace => 0,
+	    test => 0,		# for easy comparaison with the core require
+	    trace => 0,		# non stop trace
+	    s_by_s => 0,	# trace associated to an execution stop
 	    );
 sub import {
     shift;
@@ -29,9 +33,13 @@ sub import {
     $outfh = $opts{stdout} ? *STDOUT : *STDERR;
     $opts{after} = 1 if $opts{sort};
     $opts{after} = 1 if $opts{test};
-
-    *trace = $opts{trace} ? sub {print STDERR "@_\n"} : sub {};
-    trace "Definition of ", __PACKAGE__;
+    *trace = $opts{s_by_s} ? sub {
+	print STDERR "line ", (caller(0))[2], ": ", 
+	"@_"; 
+	<>;
+    } : $opts{trace} ? sub {
+	print STDERR "@_\n";
+    } : sub {};
     $indent = $opts{flat} ? '' : '   ';
     if ($opts{all}) {
 	print $outfh join("\n\t", "Already loaded:", keys %INC) . "\n";
@@ -41,111 +49,59 @@ BEGIN {
     my $level = -1;
     my $prefix = '';
     *CORE::GLOBAL::require = sub (*) {
-	trace "require's args: @_";
-	my ($arg, $isnvar, $isquoted, $rstatus);
+	trace join ', ', (caller(0))[0,1,2,3,4];
+	# if you uncomment this line, you obtain some strange results???
+	#trace "require's args: @_"; 
+	my ($arg, $rstatus);
 	unless (@_) {
-	    $arg = $_;
-	    $isnvar = 0;
+	    # this feature described in the documentation 
+	    # doesn't work on my ActiveState Perl
+	    $arg = $_;	
 	} else {
-	    local $@;
 	    $arg = $_[0];
-	    eval { $_[0] = $arg }; # doesn't work with require "string$var"
-	    $isnvar =  $@ ? 1 : 0;
-	    $isquoted = $@ ? $isquoted : 0;
 	}
-	if ($isnvar) { # convert chars in number if necessary
-	    trace "arg isn't var";
-	    unless ($arg =~ /^[A-Za-z\d_]/) { # certainly a version number
-                $arg = join '.', map { ord } split //, $arg;
-		trace "Convert char to number: $arg";
-	    }
-	} else {
-	    trace "arg is a var";
+	unless ($arg =~ /^[A-Za-z\d_]/) { # certainly a version number
+	    $arg = join '.', map { ord } split //, $arg;
+	    trace "Convert char to number: $arg";
 	}
-	# version number
-	if ($isnvar and $arg =~ /^v?(\d[\d._]*)$/) {
-	    trace "Required version: $1";
-	    #local $@;
-	    $rstatus = eval qq!return CORE::require $arg!;
-	    if ($@) {
+	if ($arg =~ /^\d[\d.]*$/) {
+	    trace "required version: $arg";
+	    $rstatus = eval { return CORE::require $_[0] } ;
+	    if ($@) { # recontextualize
+		trace "error: $@";
+		#$@ =~ s/at \(eval \d+\) line \d+/
+		$@ =~ s/at .* line \d+[.]/
+		    sprintf "at %s line %d.",(caller())[1,2]/e;
 		die $@;
 	    }
 	    trace "status: $rstatus";
 	    return $rstatus;
+	} 
+	unless ($opts{flat}) {
+	    $prefix = $INC{$mod} ? '.' : '+';
 	} else {
-	    if ($isnvar) { 
-		my $mod = $arg;
-		unless (defined $isquoted) {
-		    trace "\$quote not yet defined!";
-		    # certainly a quoted string (like: 'Bar.pm')
-		    if ($mod =~ /[.]p[lm]$/ or $mod =~ /$dirsep/o) {
-			$isquoted = 1;
-		    } else {
-			$isquoted = 0;
-		    }
-		}
-		unless ($isquoted) {
-		    $mod =~ s{::}{$dirsep}g;
-		    $mod .= ".pm";
-		}
-		trace "Module file: $mod";
-
-		unless ($opts{flat}) {
-		    $prefix = $INC{$mod} ? '.' : '+';
-		} else {
-		    $prefix = '';
-		}
-		return 1 if $INC{$mod} && $opts{flat};
-	    }
-	    $level++ unless $opts{flat};
-	    unless ($opts{after}) {
-		print $outfh $indent x $level, "$prefix$arg";
-		print $outfh $indent x $level, " [from: ", join(" ", (caller())[1,2]), "]\n";
-	    } else {
-		push @info, [$arg => $level]
-	    }
-	    my $rstatus;
-	    if ($isnvar) { # argument isn't a var
-		#local $@;
-		if ($isquoted) {
-		    trace "quoted!";
-		    $rstatus = eval "return CORE::require '$arg'";
-		} else {
-		    trace "unquoted $arg!";
-		    $rstatus = eval "return CORE::require $arg";
-		    if ($@ =~ /^Can\'t locate/) {
-			if ($opts{try}) {
-			    trace "try";
-			    $rstatus = eval "return CORE::require '$arg'";
-			}
-		    } else {
-		    }
-		}
-		if ($@) { # recontextualize
-		    trace "$@";
-		    pop @info if $opts{after};
-		    $level-- unless $opts{flat};
-		    $@ =~ s/at \(eval \d+\) line \d+/
-			sprintf "at %s line %d",(caller())[1,2]/e;
-		    die $@;
-		}
-	    } else {
-		eval {
-		    $rstatus = CORE::require $arg;
-		};
-		if ($@) { # recontextualize
-		    trace "$@";
-		    pop @info if $opts{after};
-		    $level-- unless $opts{flat};
-		    $@ =~ s/at .+ line \d+/
-			sprintf "at %s line %d",(caller())[1,2]/e;
-		    die $@;
-		}
-	    }
-	    $level-- unless $opts{flat};
-	    trace "status: $rstatus";
-	    return $rstatus;
+	    $prefix = '';
 	}
+	return 1 if $INC{$mod} && $opts{flat};
+	$level++ unless $opts{flat};
+	unless ($opts{after}) {
+	    print $outfh $indent x $level, "$prefix$arg";
+	    print $outfh $indent x $level, " [from: ", join(" ", (caller())[1,2]), "]\n";
+	} else {
+	    push @info, [$arg => $level];
+	}
+	$rstatus = eval { return CORE::require $_[0] } ;
+	if ($@) { # recontextualize
+	    trace "error: $@";
+	    pop @info if $opts{after};
+	    $level-- unless $opts{flat};
+	    $@ =~ s/at .* line \d+[.]/
+		sprintf "at %s line %d.",(caller())[1,2]/e;
+	    die $@;
+	}
+	$level-- unless $opts{flat};
+	trace "status: $rstatus";
+	return $rstatus;
     };
 }
 
@@ -208,6 +164,8 @@ __END__
 =head1 NAME
 
 Devel::TraceLoad - Trace loadings of Perl Programs
+
+=head1 SYNOPSIS
 
     # with perldb
     perl -d:TraceLoad script.pl
@@ -298,25 +256,15 @@ list sorted alphabetically on the names of module or the paths.
 
 =item stdout
 
-Redirect the trace towards B<STDOUT>. By defect the trace
-is redirected towards B<STDERR>.
+Redirect the trace towards B<STDOUT>. By default the trace is
+redirected to B<STDERR>.
 
 =item stop
 
-Stop the program before the first of the program is not
-carried out if the execution with place with perldb.  Does not allow
-to see the loadings carried out by the B<require()> and the
-loadings which are in a B<eval()>.
-
-=item try
-
-If the execution fails with the message C<Can' T locate Bar.pm in @INC... >
-and that you are sure of your code, use the option B<try>. This option
-activates heuristics to compensate for the fact that it is not possible to
-know if the argument of a c<require() > is placed between quotation marks
-or not (I am mistaken?).  To try to determine it we use heuristics which
-consists, amongst other things, to consider that the argument is placed
-between quotation marks if it is not suffixed by ".pl" or ".pm".
+Stop the program before execution of the first of the program, if
+execution is under the perldb control.  Does not allow to see the
+loadings carried out by B<require()> and the loadings which are in
+B<eval()>.
 
 =back
 
@@ -325,16 +273,27 @@ between quotation marks if it is not suffixed by ".pl" or ".pm".
 Some modules and pragmas are loaded because of the presence
 of B<-MDevel::TraceLoad>. These modules do not appear in the
 trace (with the version of Perl on which we made our tests the modules
-concerned are Exporter.pm Carp.pm vars.pm warnings::register.pm
-Devel::TraceLoad.pm warnings.pm).
+concerned are Exporter.pm, Carp.pm, vars.pm, warnings::register.pm,
+Devel::TraceLoad.pm, warnings.pm).
 
-=head1 AUTHOR
+Version 0.07 no more worked with the ActivePerl that i use at home.  So
+the current version is a nearly complete rewrite of the previous
+version. This is certainly related to some changes to the require()
+implementation. If you have to use Devel::TraceLoad with another
+with a Perl under 5.6.1 try version 0.07 of Devel::TraceLoad.
+
+=head1 AUTHORS
 
 Philippe Verdret < pverdret@dalet.com >, on the basis of an idea of
 Joshua Pritikin < vishnu@pobox.com >.
 
+=head1 NOTES
+
 The english version of documentation is produced from a machine
 translation carried out by C<babel.altavista.com>.
+
+Many thanks to Mooney Christophe < CMOONEY1@motorola.com > for his help
+to debug the tests.
 
 =HEAD1 SEE ALSO
 

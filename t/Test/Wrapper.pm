@@ -1,17 +1,17 @@
+# todo: trace only the failing tests
 # Examples: 
 # make test TEST_FILES=t/test1.t TEST_VERBOSE=2
 # verbose levels:
 # 1 : print configuration and major operations
 # 2 : more details
-# 3 : print the execution result
-
+# 3 : print execution results
 require 5.004;
 use strict;
-package W;			# Test::Wrapper
+package Test::Wrapper;		      
 use vars qw($VERBOSE $LOG);
-$W::VERSION = '1.3';
-$W::VERBOSE = $ENV{TEST_VERBOSE} || 0;
-$W::LOG = $ENV{TEST_LOG} ? 'testlog' : 0;
+$Test::Wrapper::VERSION = '1.3';
+$Test::Wrapper::VERBOSE = $ENV{TEST_VERBOSE} || 0;
+$Test::Wrapper::LOG = $ENV{TEST_LOG} ? 'testlog' : 0;
 
 if ($LOG) {
   if (open(LOG, ">>$LOG")) {
@@ -30,14 +30,14 @@ sub new {
       unless (ref($param) eq 'HASH') {
 	  $param = { 
 	      Range => $param,
-	      PerlOpts => @_ ? shift : '',
+	      CmdOpts => @_ ? shift : '',
 	      Program =>  @_ ? shift : '',
 	  };
       } 
   } else { # defaults
       $param = { 
 	  Range => '1..1',
-	  PerlOpts => '',
+	  CmdOpts => '',
 	  Program => '',
       };
   }
@@ -45,7 +45,7 @@ sub new {
   print "Verbosity level: $VERBOSE\n" if $VERBOSE;
   print "$param->{Range}\n";
   print "Program to test: $param->{Program}\n" if $VERBOSE;
-  print "Perl Options: $param->{PerlOpts}\n" if $VERBOSE;
+  print "Perl Options: $param->{CmdOpts}\n" if $VERBOSE;
   bless $param, $class;
 }
 sub result {
@@ -55,7 +55,7 @@ sub result {
   my @err;
   my $result;
   if ($cmd) {
-    my $popts = $self->{PerlOpts};
+    my $popts = $self->{CmdOpts};
     print "Execution of: $^X $popts $cmd\n" if $VERBOSE;
     die "unable to find '$cmd'" unless -f $cmd;
     # the following line doesn't work on Win95 (ActiveState's Perl, build 516):
@@ -144,6 +144,11 @@ sub detector {
     my $s2 = shift;
     #print STDERR length($s1), "\n";
     #print STDERR length($s2), "\n";
+    my $l1 = length($s1);
+    my $l2 = length($s2);
+    if ( $l1 != $l2 ) {
+	print STDERR "Not the same length ($l1, $l2)\n";
+    }
     my ($c1, $c2);
     my $l = 1;
     while ( ($s1 =~ /\G(.)/gc) or (($s1 =~ /\G(.)/gcs) and $l++) ) {
@@ -160,8 +165,10 @@ sub detector {
 	    return 1;
 	}
     }
+    # last case to check
     if (my $rest = substr($s2, pos($s2))) {
 	print STDERR ">>>$rest\n";
+	return 1;
     }
     return 0;
 }
@@ -174,8 +181,10 @@ sub comparator {
     #print STDERR "->$red<-$eed<\n";
     my $expected = $self->expected;
     my $result = $self->result;
-    $expected =~ s:\n+$::;
-    $result =~ s:\n+$::;
+    # if you to compare data with various line terminators
+    # could be differenciated along the plate-form
+    $expected =~ s:[\r\n]+:\r\n:g; # s:\n+$::; 
+    $result =~ s:[\r\n]+:\r\n:g; # s:\n+$::; 
     # could be a specific editor
     $expected =~ s/$eed/(...deleted...)/g unless $eed eq '';
     $result =~ s/$red/(...deleted...)/g unless $red eq '';

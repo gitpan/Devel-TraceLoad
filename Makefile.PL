@@ -7,5 +7,12 @@ WriteMakefile(
               'VERSION_FROM' => 'lib/Devel/TraceLoad.pm',
 	      #'PREREQ_PM' => {},
 	      'clean' => { FILES => 'err' },
-	      #'dist' => { COMPRESS => "gzip", SUFFIX => "gz" }
+	      'dist' => { 
+		  COMPRESS => "gzip", 
+		  SUFFIX => "gz",
+	      },
+	      'dist' => { 
+		  COMPRESS => "c:/Program Files/WinZip/WINZIP32.EXE", 
+		  SUFFIX => "" ,
+	      }
              );

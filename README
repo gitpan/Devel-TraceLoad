@@ -1,0 +1,21 @@
+For installing this module what you can do is simply to execute the
+following commands:
+
+% perl Makefile.PL
+% make 
+% make test 
+% make install
+
+If a test fails, try the following:
+
+% make test TEST_VERBOSE=1 TEST_LOG=1 
+
+On a windows system, you can use the pmake wich is a make written in
+perl, available on the CPAN.
+
+Without "make" you can write something like this:
+
+% perl -It -Ilib -MDevel::TraceLoad t/all.t
+
+
+

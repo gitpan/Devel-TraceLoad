@@ -1,10 +1,15 @@
 lib/Devel/TraceLoad.pm
+README
 MANIFEST
 Makefile.PL
 changes
 doc/TraceLoad_fr.pod
-t/W.pm
+t/Test/Wrapper.pm
 t/all.t
+t/longest.pl
+t/longest.ref
+t/simplest.pl
+t/simplest.ref
 t/require_use.pl
 t/require_use.ref
 t/transparency.pl
