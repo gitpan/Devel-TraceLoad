@@ -72,12 +72,12 @@ La trace est donnée à l'issue de l'exécution.
 
 =item flat
 
-Supprime les renfoncements qui indiquent les emboîtements de
+Supprime les renfoncements qui indiquent les imbrications de
 C<require()>.
 
 =item noversion
 
-Supprime l'indication de version des modules requis.
+Supprime l'indication de version des modules chargés.
 
 =item path
 

@@ -2,7 +2,7 @@
 #use strict;
 package Devel::TraceLoad;
 use vars qw($VERSION);
-$VERSION = 0.05;
+$VERSION = 0.06;
 sub trace;
 my $pkg = __PACKAGE__;
 my @info;
@@ -20,7 +20,7 @@ my %opts = (
 	    path => 0,
 	    stdout => 0,
 	    sort => 0,
-	    test => 0, # compare with the native require()
+	    test => 0, # for easy comparaison with the native require
 	    trace => 0,
 	    );
 sub import {
@@ -230,7 +230,7 @@ programs and in particular of the modules.
 
 The generated report can be obtained in various forms.  The loadings are
 indicated in the order in which they are carried out.  The trace can be
-obtained either during the execution of the loadings or the end of the
+obtained either during the execution of the loadings or at end of the
 execution.  By default, the trace is generated during the execution and the
 overlaps of loadings are marked by indentations.  All the B<require()> are
 indicated, even if it is about a B<require()> of a program already charged.
@@ -281,7 +281,7 @@ Removes the indentations which indicate nestings of B<require()>.
 
 =item noversion
 
-Removes the indication of version of the necessary modules.
+Removes the indication of version of the loaded modules.
 
 =item path
 
@@ -323,7 +323,7 @@ between quotation marks if it is not suffixed by ".pl" or ".pm".
 =head1 BUG
 
 Some modules and pragmas are loaded because of the presence
-with B<-MDevel::TraceLoad>. These modules do not appear in the
+of B<-MDevel::TraceLoad>. These modules do not appear in the
 trace (with the version of Perl on which we made our tests the modules
 concerned are Exporter.pm Carp.pm vars.pm warnings::register.pm
 Devel::TraceLoad.pm warnings.pm).

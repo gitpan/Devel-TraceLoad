@@ -1,2 +1,2 @@
-+strict [from: t/require_use.pl 2]
-.strict.pm [from: t/require_use.pl 1]
+strict 1.01
+strict.pm 1.01

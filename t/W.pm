@@ -2,7 +2,7 @@
 # make test TEST_FILES=t/test3.t TEST_VERBOSE=2
 # verbose levels:
 # 1 : print configuration and major operations
-# 2 : + details
+# 2 : more details
 # 3 : print the execution result
 
 require 5.004;
@@ -132,20 +132,22 @@ sub report {
   $s ? "ok $label\n" : "not ok $label\n";
 }
 
-my $DELIM_START = ">>>>\n";
-my $DELIM_END = "\n<<<<";
+my $delim_start = ">>>>\n";
+my $delim_end = "\n<<<<";
 
 # W->new()->detector("abc", "acv");
 sub detector {
     my $self = shift;
     my $s1 = shift;
     my $s2 = shift;
+    print "-----------$s1\n$s2----------";
     my ($c1, $c2);
     my $l = 1;
     while ( ($s1 =~ /(.)/gc) or (($s1 =~ /(.)/gs) and $l++) ) {
 	$c1 = $1;
 	$s2 =~ /(.)/gs;
 	$c2 = $1;
+	print "$c1$c2";
 	unless ($c1 eq $c2) {
 	    print STDERR "At line: $l\n";
 	    print STDERR ">>>", substr($s1, pos($s1) - 1, 20), "\n";
@@ -163,16 +165,16 @@ sub comparator {
 
     my $expected = $self->expected;
     my $result = $self->result;
-    # should be a specific editor
-    $expected =~ s/$eed//g;
-    $result =~ s/$red//g;
+    # could be a specific editor
+    $expected =~ s/$eed/(...deleted...)/g;
+    $result =~ s/$red/(...deleted...)/g;
     if ($VERBOSE) {
 	print STDERR "\n";
 	print STDERR ">>>Expected:\n$expected\n";
-	print STDERR ">>>Result:\n$result\n";
+	print STDERR ">>>Effective:\n$result\n";
     }
     unless ($expected eq $result) {
-	print STDERR "not equals\n";
+	print STDERR "not equals\n" if $VERBOSE;
 	if ($VERBOSE >= 2 and defined $detector) {
 	    print STDERR "Difference between expected and effective result: \n";
 	    $self -> $detector($expected, $result);
@@ -180,19 +182,20 @@ sub comparator {
 	}
 	0;
     } else {
-	print STDERR "equals\n";
+	print STDERR "equals\n" if $VERBOSE;
 	1;
     }
 }
+# todo: defined named parameters
 sub test {
   my $self = shift;
-  my $label = @_ ? shift : 1;
-  my $prog_to_test = @_ ? shift : undef;
-  my $reference = @_ ? shift : undef;	# string, filehandle
-  my $comparator = @_ ? shift : undef;
-  my $detector = @_ ? shift : undef;
+  my $label = @_ ? shift : 1;	# specific label for the test
+  my $prog_to_test = @_ ? shift : undef; # filename of the program to test
+  my $reference = @_ ? shift : undef;	# string or filehandle
+  my $comparator = @_ ? shift : undef; # sub, compare result with a ref and say yes or no
+  my $detector = @_ ? shift : undef; # sub, localize the first difference
   my $r_ed = @_ ? shift : ''; # regexp for editing the effective result
-  my $e_ed = @_ ? shift : ''; # regexp for edition the expected result
+  my $e_ed = @_ ? shift : ''; # regexp for editing the expected result
 
   $self->result("$prog_to_test") if defined $prog_to_test;
   $self->expected($reference) if defined $reference;
