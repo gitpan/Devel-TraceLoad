@@ -1,5 +1,5 @@
 # Examples: 
-# make test TEST_FILES=t/test3.t TEST_VERBOSE=2
+# make test TEST_FILES=t/test1.t TEST_VERBOSE=2
 # verbose levels:
 # 1 : print configuration and major operations
 # 2 : more details
@@ -9,7 +9,7 @@ require 5.004;
 use strict;
 package W;			# Test::Wrapper
 use vars qw($VERBOSE $LOG);
-$W::VERSION = '1.2';
+$W::VERSION = '1.3';
 $W::VERBOSE = $ENV{TEST_VERBOSE} || 0;
 $W::LOG = $ENV{TEST_LOG} ? 'testlog' : 0;
 
@@ -31,12 +31,14 @@ sub new {
 	  $param = { 
 	      Range => $param,
 	      PerlOpts => @_ ? shift : '',
+	      Program =>  @_ ? shift : '',
 	  };
       } 
   } else { # defaults
       $param = { 
 	  Range => '1..1',
 	  PerlOpts => '',
+	  Program => '',
       };
   }
   print "\n";
@@ -140,14 +142,17 @@ sub detector {
     my $self = shift;
     my $s1 = shift;
     my $s2 = shift;
-    print "-----------$s1\n$s2----------";
+    #print STDERR length($s1), "\n";
+    #print STDERR length($s2), "\n";
     my ($c1, $c2);
     my $l = 1;
-    while ( ($s1 =~ /(.)/gc) or (($s1 =~ /(.)/gs) and $l++) ) {
+    while ( ($s1 =~ /\G(.)/gc) or (($s1 =~ /\G(.)/gcs) and $l++) ) {
 	$c1 = $1;
 	$s2 =~ /(.)/gs;
 	$c2 = $1;
-	print "$c1$c2";
+	#$c1 = '\n' if $c1 =~ /\n/;
+	#$c2 = '\n' if $c2 =~ /\n/;
+	#print STDERR "|$c1|$c2|\n";
 	unless ($c1 eq $c2) {
 	    print STDERR "At line: $l\n";
 	    print STDERR ">>>", substr($s1, pos($s1) - 1, 20), "\n";
@@ -155,19 +160,25 @@ sub detector {
 	    return 1;
 	}
     }
+    if (my $rest = substr($s2, pos($s2))) {
+	print STDERR ">>>$rest\n";
+    }
     return 0;
 }
 sub comparator { 
     my $self = shift;
     my $detector = @_ && defined $_[0] ? shift : $self->can('detector'); 
-    my $red = @_ ? shift : '\s+$'; # edit the result
-    my $eed = @_ ? shift : '\s+$'; # edit the reference
+    my $red = @_ ? shift : ''; # edit the result
+    my $eed = @_ ? shift : ''; # edit the reference
 
+    #print STDERR "->$red<-$eed<\n";
     my $expected = $self->expected;
     my $result = $self->result;
+    $expected =~ s:\n+$::;
+    $result =~ s:\n+$::;
     # could be a specific editor
-    $expected =~ s/$eed/(...deleted...)/g;
-    $result =~ s/$red/(...deleted...)/g;
+    $expected =~ s/$eed/(...deleted...)/g unless $eed eq '';
+    $result =~ s/$red/(...deleted...)/g unless $red eq '';
     if ($VERBOSE) {
 	print STDERR "\n";
 	print STDERR ">>>Expected:\n$expected\n";
@@ -190,6 +201,7 @@ sub comparator {
 sub test {
   my $self = shift;
   my $label = @_ ? shift : 1;	# specific label for the test
+  # or see $self->{Program}
   my $prog_to_test = @_ ? shift : undef; # filename of the program to test
   my $reference = @_ ? shift : undef;	# string or filehandle
   my $comparator = @_ ? shift : undef; # sub, compare result with a ref and say yes or no

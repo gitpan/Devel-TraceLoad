@@ -2,7 +2,7 @@
 #use strict;
 package Devel::TraceLoad;
 use vars qw($VERSION);
-$VERSION = 0.06;
+$VERSION = 0.07;
 sub trace;
 my $pkg = __PACKAGE__;
 my @info;
@@ -330,10 +330,10 @@ Devel::TraceLoad.pm warnings.pm).
 
 =head1 AUTHOR
 
-Philippe Verdret < pverdret@dalet.com >, on the basis of idea of
+Philippe Verdret < pverdret@dalet.com >, on the basis of an idea of
 Joshua Pritikin < vishnu@pobox.com >.
 
-the English version of documentation is produced from a machine
+The english version of documentation is produced from a machine
 translation carried out by C<babel.altavista.com>.
 
 =HEAD1 SEE ALSO

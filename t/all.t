@@ -28,7 +28,7 @@ trace "Total number of tests: $num";
 #perl -MDevel::TraceLoad=after,path script.pl
 # if some options are needed:
 my %PerlOpts = (
-		Default => '-MDevel::TraceLoad=after',
+		Default => '-MDevel::TraceLoad=after,noversion',
 		'' => '',
 		);
 my $test = '';
