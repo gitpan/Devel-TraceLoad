@@ -2,7 +2,7 @@
 #use strict;
 package Devel::TraceLoad;
 use vars qw($VERSION);
-$VERSION = 0.03;
+$VERSION = 0.04;
 sub trace;
 my $pkg = __PACKAGE__;
 my @info;
@@ -20,15 +20,15 @@ my %opts = (
 	    path => 0,
 	    stdout => 0,
 	    sort => 0,
+	    test => 0, # compare with the native require()
 	    trace => 0,
 	    );
 sub import {
     shift;
     $opts{$_} = 1 foreach @_;
     $outfh = $opts{stdout} ? *STDOUT : *STDERR;
-    $opts{after} ||= 0;
-    $opts{pretty} ||= 0; 
     $opts{after} = 1 if $opts{sort};
+    $opts{after} = 1 if $opts{test};
 
     *trace = $opts{trace} ? sub {print STDERR "@_\n"} : sub {};
     trace "Definition of ", __PACKAGE__;
@@ -57,19 +57,18 @@ BEGIN {
 	    trace "arg isn't var";
 	    unless ($arg =~ /^[A-Za-z\d_]/) { # certainly a version number
                 $arg = join '.', map { ord } split //, $arg;
-		trace "Conversion char to number: $arg";
+		trace "Convert char to number: $arg";
 	    }
 	} else {
 	    trace "arg is a var";
 	}
 	# version number
-	# you can't write: $version = '5.5.5'; require $version
 	if ($isnvar and $arg =~ /^v?(\d[\d._]*)$/) {
 	    trace "Required version: $1";
-	    local $@;
+	    #local $@;
 	    $rstatus = eval qq!return CORE::require $arg!;
 	    if ($@) {
-		die "$@"; 
+		die $@;
 	    }
 	    trace "status: $rstatus";
 	    return $rstatus;
@@ -107,7 +106,7 @@ BEGIN {
 	    }
 	    my $rstatus;
 	    if ($isnvar) { # argument isn't a var
-		local $@;
+		#local $@;
 		if ($isquoted) {
 		    trace "quoted!";
 		    $rstatus = eval "return CORE::require '$arg'";
@@ -125,10 +124,10 @@ BEGIN {
 		if ($@) { # recontextualize
 		    trace "$@";
 		    pop @info if $opts{after};
+		    $level-- unless $opts{flat};
 		    $@ =~ s/at \(eval \d+\) line \d+/
 			sprintf "at %s line %d",(caller())[1,2]/e;
-		    # doesn't work: die "$@"; ???
-		    print STDERR "$@"; exit;
+		    die $@;
 		}
 	    } else {
 		eval {
@@ -136,10 +135,11 @@ BEGIN {
 		};
 		if ($@) { # recontextualize
 		    trace "$@";
-		    pop @info if $opts{after};		    
+		    pop @info if $opts{after};
+		    $level-- unless $opts{flat};
 		    $@ =~ s/at .+ line \d+/
 			sprintf "at %s line %d",(caller())[1,2]/e;
-		    die "$@";
+		    die $@;
 		}
 	    }
 	    $level-- unless $opts{flat};
@@ -152,6 +152,7 @@ BEGIN {
 END {
     trace "END block";
     return unless $opts{after};
+    return if $opts{test};
     my ($mod, $level, $inc, $path, $version);
     #while (my($k, $v) = each %INC) { trace "$k -> $v"; }
     foreach (@info) {
@@ -222,7 +223,7 @@ Devel::TraceLoad - Trace loadings of Perl Programs
 
 =head1 DESCRIPTION
 
-the module B<Devel::TraceLoad> traces the B<require()>
+The module B<Devel::TraceLoad> traces the B<require()>
 and the B<use()> appearing in a program.  The trace makes it
 possible to know the dependences of a program with respect to other
 programs and in particular of the modules.
@@ -258,7 +259,7 @@ equivalent.
 
 =head1 OPTIONS
 
-to pass from the options to the module B<Devel::TraceLoad>
+To pass from the options to the module B<Devel::TraceLoad>
 one will write:
 
     perl -MDevel::TraceLoad=option1[,option2,...]
@@ -272,7 +273,7 @@ account.  So that B<stop> is taken into account one will write:
 
 =item after
 
-the trace is given at the end of the execution.
+The trace is given at the end of the execution.
 
 =item flat
 
@@ -292,12 +293,12 @@ of the execution, i.e. in the presence of the option B<after>.
 
 =item sort
 
-the trace is provided at the end of the execution and gives a
+The trace is provided at the end of the execution and gives a
 list sorted alphabetically on the names of module or the paths.
 
 =item stdout
 
-Redirige the trace towards B<STDOUT>. By defect the trace
+Redirect the trace towards B<STDOUT>. By defect the trace
 is redirected towards B<STDERR>.
 
 =item stop
@@ -315,13 +316,13 @@ activates heuristics to compensate for the fact that it is not possible to
 know if the argument of a c<require() > is placed between quotation marks
 or not (I am mistaken?).  To try to determine it we use heuristics which
 consists, amongst other things, to consider that the argument is placed
-between quotation marks if it is not suffixé by ".pl" or ".pm".
+between quotation marks if it is not suffixed by ".pl" or ".pm".
 
 =back
 
 =head1 BUG
 
-Certain modules and pragmas are charged because of the presence
+Some modules and pragmas are loaded because of the presence
 with B<-MDevel::TraceLoad>. These modules do not appear in the
 trace (with the version of Perl on which we made our tests the modules
 concerned are Exporter.pm Carp.pm vars.pm warnings::register.pm

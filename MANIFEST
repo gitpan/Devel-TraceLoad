@@ -1,5 +1,13 @@
+Devel/TraceLoad.pm
 MANIFEST
 Makefile.PL
-TraceLoad.pm
+changes
 doc/TraceLoad_fr.pod
-
+t/W.pm
+t/all.t
+t/require_use.pl
+t/require_use.ref
+t/transparency.pl
+t/transparency.ref
+t/version_num.pl
+t/version_num.ref

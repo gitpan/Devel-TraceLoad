@@ -1,0 +1,6 @@
++lib [from: t/version_num.pl 5]
+   +Config    [from: D:\Perl\lib/lib.pm 4]
+      .Exporter       [from: D:\Perl\lib/Config.pm 2]
++Data::Bar [from: t/version_num.pl 6]
++v5.5.1 [from: t/version_num.pl 8]
+Can't locate v5.5.1 in @INC (@INC contains: t d:/PerlDev/TraceLoad/blib/arch d:/PerlDev/TraceLoad/blib/lib D:\Perl\lib D:/Perl/lib D:/Perl/site/lib .) at t/version_num.pl line 8.

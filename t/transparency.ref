@@ -1,0 +1,10 @@
+t/data/toload.pl
+Can't locate Some/Thing.pm in @INC (@INC contains: d:/PerlDev/TraceLoad/blib/arch d:/PerlDev/TraceLoad/blib/lib D:\Perl\lib D:\Perl\lib D:/Perl/lib D:/Perl/site/lib . D:/Perl/lib D:/Perl/site/lib .) at t/transparency.pl line 10.
+Can't locate t/data/toload in @INC (@INC contains: d:/PerlDev/TraceLoad/blib/arch d:/PerlDev/TraceLoad/blib/lib D:\Perl\lib D:\Perl\lib D:/Perl/lib D:/Perl/site/lib . D:/Perl/lib D:/Perl/site/lib .) at t/transparency.pl line 15.
+Can't locate nothing.pm in @INC (@INC contains: d:/PerlDev/TraceLoad/blib/arch d:/PerlDev/TraceLoad/blib/lib D:\Perl\lib D:\Perl\lib D:/Perl/lib D:/Perl/site/lib . D:/Perl/lib D:/Perl/site/lib .) at t/transparency.pl line 20.
+t/data/toload.pl [from: t/transparency.pl 5]
+.t/data/toload.pl [from: t/transparency.pl 6]
+.t/data/toload.pl [from: t/transparency.pl 7]
++Some::Thing [from: t/transparency.pl 10]
++t/data/toload [from: t/transparency.pl 15]
++nothing [from: t/transparency.pl 20]

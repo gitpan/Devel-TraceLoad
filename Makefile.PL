@@ -4,8 +4,9 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
               'NAME'         => 'Devel::TraceLoad',
-              'VERSION_FROM' => 'TraceLoad.pm', 
+              'VERSION_FROM' => 'Devel/TraceLoad.pm',
 	      #'PREREQ_PM' => {},
 	      #'clean' => { FILES => '' },
+	      # how to use the winzip tool here?
 	      #'dist' => { COMPRESS => "gzip", SUFFIX => "gz" }
              );

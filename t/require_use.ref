@@ -1,0 +1,2 @@
++strict [from: t/require_use.pl 2]
+.strict.pm [from: t/require_use.pl 1]
