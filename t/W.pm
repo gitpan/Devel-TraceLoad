@@ -1,7 +1,7 @@
 # Examples: 
 # make test TEST_FILES=t/test3.t TEST_VERBOSE=2
 # verbose levels:
-# 1 : print configuration and major actions
+# 1 : print configuration and major operations
 # 2 : + details
 # 3 : print the execution result
 
@@ -125,6 +125,9 @@ sub report {
   my $self = shift;
   my $label = shift;
   my $sub = shift;
+  unless (ref $sub eq 'CODE') {
+      die "'$sub' not a coderef";
+  }
   my $s = $self->$sub(@_);
   $s ? "ok $label\n" : "not ok $label\n";
 }
@@ -154,17 +157,20 @@ sub detector {
 }
 sub comparator { 
     my $self = shift;
-    my $detector = @_ ? shift : $self->can('detector'); 
+    my $detector = @_ && defined $_[0] ? shift : $self->can('detector'); 
+    my $red = @_ ? shift : '\s+$'; # edit the result
+    my $eed = @_ ? shift : '\s+$'; # edit the reference
 
     my $expected = $self->expected;
     my $result = $self->result;
+    # should be a specific editor
+    $expected =~ s/$eed//g;
+    $result =~ s/$red//g;
     if ($VERBOSE) {
 	print STDERR "\n";
 	print STDERR ">>>Expected:\n$expected\n";
 	print STDERR ">>>Result:\n$result\n";
     }
-    $expected =~ s/\s+$//;
-    $result =~ s/\s+$//;
     unless ($expected eq $result) {
 	print STDERR "not equals\n";
 	if ($VERBOSE >= 2 and defined $detector) {
@@ -178,17 +184,22 @@ sub comparator {
 	1;
     }
 }
-sub test {		
+sub test {
   my $self = shift;
   my $label = @_ ? shift : 1;
-  my $prog_to_test = shift;
-  my $reference = shift;	# string, filehandle
-  my $comparator = @_ ? shift : $self->can('comparator'); 
-  my $detector = @_ ? shift : $self->can('detector'); 
-  
+  my $prog_to_test = @_ ? shift : undef;
+  my $reference = @_ ? shift : undef;	# string, filehandle
+  my $comparator = @_ ? shift : undef;
+  my $detector = @_ ? shift : undef;
+  my $r_ed = @_ ? shift : ''; # regexp for editing the effective result
+  my $e_ed = @_ ? shift : ''; # regexp for edition the expected result
+
   $self->result("$prog_to_test") if defined $prog_to_test;
   $self->expected($reference) if defined $reference;
-  $self->report($label, $comparator, $detector);
+
+  $comparator = $self->can('comparator') unless defined $comparator;
+  $detector = $self->can('detector') unless defined $detector;
+  $self->report($label, $comparator, $detector, $r_ed, $e_ed);
 }
 
 "End of Package"

@@ -2,7 +2,7 @@
 #use strict;
 package Devel::TraceLoad;
 use vars qw($VERSION);
-$VERSION = 0.04;
+$VERSION = 0.05;
 sub trace;
 my $pkg = __PACKAGE__;
 my @info;
@@ -225,7 +225,7 @@ Devel::TraceLoad - Trace loadings of Perl Programs
 
 The module B<Devel::TraceLoad> traces the B<require()>
 and the B<use()> appearing in a program.  The trace makes it
-possible to know the dependences of a program with respect to other
+possible to know the dependencies of a program with respect to other
 programs and in particular of the modules.
 
 The generated report can be obtained in various forms.  The loadings are
@@ -237,10 +237,10 @@ indicated, even if it is about a B<require()> of a program already charged.
 A B<+> indicates that the program is charged for the first time.  A B<.>
 indicates that the program was already charged.
 
-When the trace is differed, the number of version of the modules
-is indicated.  A differed trace can be sorted and if it is wished the
-names of the modules can be replaced by the absolute name of the
-files.
+When the trace is differed, the number of version of the modules is
+indicated.  A differed trace can be sorted and if it is wished the
+names of the modules can be replaced by the absolute name of
+the files.
 
 The module is close to B<Devel::Modlist> but uses a redefinition of
 B<require()> instead of exploiting B<%INC>.  In a will of homogeneity the

@@ -1,4 +1,4 @@
-Devel/TraceLoad.pm
+lib/Devel/TraceLoad.pm
 MANIFEST
 Makefile.PL
 changes
@@ -11,3 +11,5 @@ t/transparency.pl
 t/transparency.ref
 t/version_num.pl
 t/version_num.ref
+t/Data/Bar.pm
+t/Data/toload.pl

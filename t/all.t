@@ -55,7 +55,7 @@ foreach my $prog (@tests) {
 	if (-s $file) {
 	    open my $result, "$file" or die "can't open '$file' ($!)";
 	    $test->expected($result);
-	    print $test->test($t);
+	    print $test->test($t, undef, undef, undef, undef, 'in @INC.*', 'in @INC.*');
 	}
     }
 }
