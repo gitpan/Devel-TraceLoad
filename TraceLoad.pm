@@ -1,5 +1,5 @@
 package Devel::TraceLoad;
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 BEGIN {
     require 5.00556;
@@ -14,8 +14,8 @@ BEGIN {
 		$m .= '.pm';
 	    }
 	    return 1 if $INC{$m};
-	    Carp::carp "require $m";
 	    require $m;
+	    Carp::carp "require $m via $INC{$m}";
 	}
     };
 }
