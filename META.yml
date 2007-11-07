@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Devel-TraceLoad
-version:             0.9.0
+version:             0.9.1
 abstract:            Discover which modules a Perl program loads.
 license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.36
