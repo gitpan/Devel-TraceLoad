@@ -1,18 +1,26 @@
+use strict;
+use warnings;
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
+
+eval 'use ExtUtils::MakeMaker::Coverage';
 
 WriteMakefile(
-              'NAME'         => 'Devel::TraceLoad',
-              'VERSION_FROM' => 'lib/Devel/TraceLoad.pm',
-	      #'PREREQ_PM' => {},
-	      'clean' => { FILES => 'err' },
-	      'dist' => { 
-		  COMPRESS => "gzip", 
-		  SUFFIX => "gz",
-	      },
-	      'dist' => { 
-		  COMPRESS => "c:/Program Files/WinZip/WINZIP32.EXE", 
-		  SUFFIX => "" ,
-	      }
-             );
+    ( MM->can( 'signature_target' ) ? ( SIGN => 1 ) : () ),
+    NAME          => 'Devel::TraceLoad',
+    AUTHOR        => 'Andy Armstrong <andy@hexten.net>',
+    LICENSE       => 'perl',
+    VERSION_FROM  => 'lib/Devel/TraceLoad.pm',
+    ABSTRACT_FROM => 'lib/Devel/TraceLoad.pm',
+    PL_FILES      => {},
+    PREREQ_PM     => {
+        'Test::More'   => 0,
+        'Test::Deep'   => '0.096',
+        'Scalar::Util' => 0,
+        'Data::Dumper' => 0,
+        'File::Spec'   => 0,
+        'File::Path'   => 0,
+        'File::Temp'   => 0,
+    },
+    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean => { FILES    => 'Devel-TraceLoad-*' },
+);

@@ -1,20 +1,13 @@
+Changes
 lib/Devel/TraceLoad.pm
-README
-MANIFEST
+lib/Devel/TraceLoad/Hook.pm
 Makefile.PL
-changes
-doc/TraceLoad_fr.pod
-t/Test/Wrapper.pm
-t/all.t
-t/longest.pl
-t/longest.ref
-t/simplest.pl
-t/simplest.ref
-t/require_use.pl
-t/require_use.ref
-t/transparency.pl
-t/transparency.ref
-t/version_num.pl
-t/version_num.ref
-t/Data/Bar.pm
-t/Data/toload.pl
+MANIFEST
+README
+t/00.load.t
+t/10.hook.t
+t/lib/Test/SyntheticModule.pm
+t/pod-coverage.t
+t/pod.t
+META.yml                                 Module meta-data (added by MakeMaker)
+SIGNATURE                                Public-key signature (added by MakeMaker)
