@@ -1,12 +1,9 @@
 package Devel::TraceLoad;
 
-#require 5.6.1;
-
 use warnings;
 use strict;
 use Carp;
-use Scalar::Util qw/isvstring/;
-use Devel::TraceLoad::Hook qw/register_require_hook/;
+use Devel::TraceLoad::Hook qw( register_require_hook );
 
 =head1 NAME
 
@@ -14,12 +11,12 @@ Devel::TraceLoad - Discover which modules a Perl program loads.
 
 =head1 VERSION
 
-This document describes Devel::TraceLoad version 1.0.0
+This document describes Devel::TraceLoad version 1.0.1
 
 =cut
 
-use vars qw/$VERSION/;
-$VERSION = '1.0.0';
+use vars qw( $VERSION );
+$VERSION = '1.0.1';
 
 use constant OUTFILE => 'traceload';
 
@@ -42,11 +39,11 @@ sub _option {
 sub _is_version {
     my $ver = shift;
     return unless defined $ver;
-    if ( isvstring( $ver ) ) {
-        my ( $num, @parts ) = map ord, split //, $ver;
-        # Convert to fp number
-        return $num . '.' . join( '', map { sprintf( "%03d", $_ ) } @parts );
-    }
+    # if ( isvstring( $ver ) ) {
+    #     my ( $num, @parts ) = map ord, split //, $ver;
+    #     # Convert to fp number
+    #     return $num . '.' . join( '', map { sprintf( "%03d", $_ ) } @parts );
+    # }
     return $ver if $ver =~ /^ \d+ (?: [.] \d+ )* $/x;
     return;
 }
@@ -364,14 +361,14 @@ L<http://rt.cpan.org>.
 
 =head1 AUTHOR
 
+Andy Armstrong  C<< <andy@hexten.net> >>
+
 Original version by Philippe Verdret C<< <pverdret@dalet.com> >>, from
 the basis of an idea of Joshua Pritikin C<< <vishnu@pobox.com> >>.
 
-This release by Andy Armstrong  C<< <andy@hexten.net> >>
-
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007, Andy Armstrong C<< <andy@hexten.net> >>. All rights reserved.
+Copyright (c) 2007, Andy Armstrong C<< <andy@hexten.net> >>.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
