@@ -15,11 +15,11 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 27804595ac8727549e47a085d1f81c5b4274e54a Build.PL
-SHA1 969708da158e60337442dfeffe043552f7703574 Changes
+SHA1 eb5d58e2c14423d243503daac43eba790e35246b Changes
 SHA1 b2cb4d451b7744c94c8ae6d32824ac4156cddc86 MANIFEST
-SHA1 eeef7cff29be4b68c1294b0b6e8c54521d73ccd0 META.yml
-SHA1 4167c027d01c2211f9eec5ca8bcdd25877e8bc8f Makefile.PL
-SHA1 cfc1db6d79c74ea116dcefdeb1dde8bf6ce49ae6 README
+SHA1 ecc79df6d03a879f8ed75816f09c4c02872a95fa META.yml
+SHA1 254add3827fae9425c806983987423d76a47b38d Makefile.PL
+SHA1 256b65b1b53bd7eaed44b1d98868ddccb88c64c5 README
 SHA1 7e2cfa1b9efe0d502ee57717649c90ba4bd28ba9 inc/Module/Install.pm
 SHA1 6e1392d80a0f239eecd5664f7f21f922cedb9329 inc/Module/Install/Base.pm
 SHA1 c9121d9bff4f4ab617c78ada27f458355cad0f19 inc/Module/Install/Build.pm
@@ -29,10 +29,10 @@ SHA1 54fcbed19232ec959bb17cfb4410599afc7f0779 inc/Module/Install/Makefile.pm
 SHA1 7d3be9b158e37b2b2c22084740099955623b1d56 inc/Module/Install/Metadata.pm
 SHA1 0a8b66180229ba2f9deaea1fedd0aacf7a7ace6b inc/Module/Install/Win32.pm
 SHA1 d3352eb33fe43a5f3ead513f645224fe34d73bc9 inc/Module/Install/WriteAll.pm
-SHA1 9d14258c8c381b2be9c0a731d863a76f8de64beb lib/Devel/TraceLoad.pm
-SHA1 6cc21b9f15f9069d81328e67e16fc303cf354e4e lib/Devel/TraceLoad/Hook.pm
+SHA1 dc1f058fc626f4fbc774d91771c536307711e77d lib/Devel/TraceLoad.pm
+SHA1 9d942b480f902c6b3d159a244dc2536985cdbab7 lib/Devel/TraceLoad/Hook.pm
 SHA1 c2bb2119ff0dba43180a6e9a74d93416507cb244 t/00.load.t
-SHA1 8413b707f98d852fd19f7758078e4dcc3e5b8b98 t/10.hook.t
+SHA1 c89f433920221c0b41100e8a5c1b0a02026d1ebe t/10.hook.t
 SHA1 e30fc0afabe6f1bcf8454a53aae968bbff046970 t/20.traceload.t
 SHA1 d1a002d30f24dd7da88424455546207dd60f4137 t/lib/Test/SyntheticModule.pm
 SHA1 15760542f02987332674cbaba653e01480f811ba t/pod-coverage.t
@@ -40,7 +40,7 @@ SHA1 0190346d7072d458c8a10a45c19f86db641dcc48 t/pod.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.7 (Darwin)
 
-iD8DBQFHM4hUwoknRJZQnCERAoJAAKDCgo4KbbZrsXtMoz542AQR2zBHQgCeMZ6f
-36X0w7aVwabOjoTnDoyJQbA=
-=zWAn
+iD8DBQFHPYrwwoknRJZQnCERAgKYAJwObu0QtRRWWrFav9jNEI5p0zMG+ACfdAe5
+RBKNgFYpXekqjn6m2YGGsDk=
+=NKHx
 -----END PGP SIGNATURE-----
