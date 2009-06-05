@@ -9,9 +9,9 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
+inc/MyBuilder.pm
 lib/Devel/TraceLoad.pm
 lib/Devel/TraceLoad/Hook.pm
-Makefile.PL
 MANIFEST
 META.yml
 README
@@ -21,4 +21,3 @@ t/20.traceload.t
 t/lib/Test/SyntheticModule.pm
 t/pod-coverage.t
 t/pod.t
-SIGNATURE                                Public-key signature (added by MakeMaker)
